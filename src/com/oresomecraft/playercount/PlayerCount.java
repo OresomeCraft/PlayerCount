@@ -4,6 +4,7 @@ import com.oresomecraft.playercount.database.MySQL;
 import org.bukkit.*;
 import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.*;
 
@@ -23,6 +24,7 @@ public class PlayerCount extends JavaPlugin implements Listener {
 
     Scoreboard board;
     Objective objective;
+    Team team;
 
     volatile Score smp;
     volatile Score battles;
@@ -44,6 +46,9 @@ public class PlayerCount extends JavaPlugin implements Listener {
         battles = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.AQUA + "Battles"));
         arcade = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.AQUA + "Arcade"));
         hub = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.AQUA + "Hub"));
+
+        team = board.registerNewTeam("players");
+        team.setPrefix(ChatColor.AQUA + "");
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             public void run() {
@@ -93,6 +98,12 @@ public class PlayerCount extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.getPlayer().setScoreboard(board);
+        team.addPlayer(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onDisconnect(PlayerQuitEvent event) {
+        team.removePlayer(event.getPlayer());
     }
 
     private void setupDatabase() {
