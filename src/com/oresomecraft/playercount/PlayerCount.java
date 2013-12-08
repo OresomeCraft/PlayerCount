@@ -66,6 +66,11 @@ public class PlayerCount extends JavaPlugin implements Listener {
             try {
                 mysql.open();
 
+                ResultSet totalCount = mysql.query("SELECT COUNT(*) FROM players");
+                totalCount.first();
+                objective.setDisplayName(ChatColor.DARK_AQUA + "Online players " + ChatColor.AQUA +
+                        "(" + totalCount.getInt(1) + ")");
+
                 // SMP
                 ResultSet smpCount = mysql.query("SELECT COUNT(*) FROM players WHERE server='smp'");
                 smpCount.first();
